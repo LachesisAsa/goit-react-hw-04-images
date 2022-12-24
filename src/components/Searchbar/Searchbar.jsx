@@ -4,40 +4,48 @@ import {
   SearchForm,
   SearchFormInput,
 } from './Searchbar.styled';
-import { Formik } from 'formik';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 
 export const Searchbar = ({ onSubmit }) => {
-  const initialValues = {
-    searchWord: '',
+  const [searchWord, setSearchWord] = useState('');
+
+  const reset = () => {
+    setSearchWord('');
   };
 
-  const handleSubmit = (values, { resetForm }) => {
-    resetForm();
-    if (values.searchWord.trim() === '') {
+  const handleChange = e => {
+    const { value } = e.target;
+    setSearchWord(value);
+  };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    if (searchWord.trim() === '') {
       alert('Enter valid text');
       return;
     }
-    onSubmit(values.searchWord.toLowerCase());
+    onSubmit(searchWord.toLowerCase());
+    reset();
   };
 
   return (
     <Header>
-      <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-        <SearchForm autoComplete="of">
-          <ButtonSearch type="submit">
-            <span>Search</span>
-          </ButtonSearch>
-          <label htmlFor="searchWord"></label>
-          <SearchFormInput
-            id="searchWord"
-            type="text"
-            autoFocus
-            name="searchWord"
-            placeholder="Search images and photos"
-          />
-        </SearchForm>
-      </Formik>
+      <SearchForm autoComplete="of" onSubmit={handleSubmit}>
+        <ButtonSearch type="submit">
+          <span>Search</span>
+        </ButtonSearch>
+        <label htmlFor="searchWord"></label>
+        <SearchFormInput
+          id="searchWord"
+          type="text"
+          onChange={handleChange}
+          autoFocus
+          name="searchWord"
+          placeholder="Search images and photos"
+          value={searchWord}
+        />
+      </SearchForm>
     </Header>
   );
 };

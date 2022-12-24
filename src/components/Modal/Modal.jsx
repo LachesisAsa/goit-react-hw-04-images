@@ -1,46 +1,38 @@
 import { Overlay, ModalContainer } from './Modal.styled';
 import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { useEffect } from 'react';
 
-export class Modal extends Component {
-  static defaultProps = {
-    url: '',
-    onModalClose: null,
-  };
+export const Modal = ({ url, onModalClose }) => {
+  useEffect(() => {
+    window.addEventListener('keydown', onCloseEsc);
 
-  static propTypes = {
-    url: PropTypes.string.isRequired,
-    onModalClose: PropTypes.func.isRequired,
-  };
+    return () => {
+      window.removeEventListener('keydown', onCloseEsc);
+    };
+  });
 
-  componentDidMount() {
-    window.addEventListener('keydown', this.onCloseEsc);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.onCloseEsc);
-  }
-
-  onCloseEsc = e => {
+  const onCloseEsc = e => {
     if (e.code === 'Escape') {
-      this.props.onModalClose();
+      onModalClose();
     }
   };
 
-  onCloseBackdrop = e => {
+  const onCloseBackdrop = e => {
     if (e.currentTarget === e.target) {
-      this.props.onModalClose();
+      onModalClose();
     }
   };
 
-  render() {
-    const { url } = this.props;
-    return (
-      <Overlay onClick={this.onCloseBackdrop}>
-        <ModalContainer>
-          <img src={url} alt={url} width="900" height="680" />
-        </ModalContainer>
-      </Overlay>
-    );
-  }
-}
+  return (
+    <Overlay onClick={onCloseBackdrop}>
+      <ModalContainer>
+        <img src={url} alt={url} width="900" height="680" />
+      </ModalContainer>
+    </Overlay>
+  );
+};
+
+Modal.propTypes = {
+  url: PropTypes.string.isRequired,
+  onModalClose: PropTypes.func.isRequired,
+};
